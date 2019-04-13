@@ -2,7 +2,7 @@
 
 A simple Elm app for chord analysis.
 
-Demo: TODO
+[Demo](https://pauljxtan.github.io/cadenza)
 
 ## Roadmap
 

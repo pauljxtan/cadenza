@@ -105,6 +105,21 @@ updateKey newKey model =
             { model | key = newKey, chords = chordsEmpty }
 
 
+updateInversion : String -> Model -> Model
+updateInversion newInversion model =
+    case String.toInt newInversion of
+        Just inv ->
+            case strToNote model.key of
+                Just key ->
+                    { model | inversion = inv, chords = newChords key inv }
+
+                Nothing ->
+                    { model | inversion = inv }
+
+        Nothing ->
+            model
+
+
 newChords : Note -> Int -> Dict String (List String)
 newChords note inversion =
     Dict.fromList
@@ -117,21 +132,6 @@ newChords note inversion =
         , ( "Augmented", augmentedSeventh inversion note |> List.map noteToStr )
         , ( "Augmented-major", augmentedMajorSeventh inversion note |> List.map noteToStr )
         ]
-
-
-updateInversion : String -> Model -> Model
-updateInversion newInversion model =
-    case String.toInt newInversion of
-        Just inv ->
-            case strToNote model.key of
-                Just key ->
-                    { model | inversion = inv, chords = newChords key inv }
-
-                Nothing ->
-                    model
-
-        Nothing ->
-            model
 
 
 
@@ -195,7 +195,7 @@ view model =
                 , div [ class "" ]
                     [ table [ class "table" ]
                         ([ tr []
-                            ([ "Chord", "Root", "3rd", "5th", "7th" ]
+                            ([ "Chord", "Root", "Third", "Fifth", "Seventh" ]
                                 |> List.map (\s -> th [] [ text s ])
                             )
                          ]
@@ -204,11 +204,11 @@ view model =
                     ]
                 ]
             ]
-        , footer [ class "footer" ]
-            [ div [ class "content has-text-centered" ]
-                [ p [] [ text "Built with Elm by ", a [ href "https://paultan.ca" ] [ text "Paul Tan" ] ]
-                ]
-            ]
+        --, footer [ class "footer" ]
+            --[ div [ class "content has-text-centered" ]
+                --[ p [] [ text "Built with Elm by ", a [ href "https://paultan.ca" ] [ text "Paul Tan" ] ]
+                --]
+            --]
         ]
 
 
@@ -228,10 +228,10 @@ seventhChordRow model key =
 unicodeAccidentals : String -> String
 unicodeAccidentals str =
     str
-        |> String.replace "bb" "𝄫"
+        |> String.replace "bb" " 𝄫"
         |> String.replace "b" "♭"
         |> String.replace "#" "♯"
-        |> String.replace "x" "𝄪"
+        |> String.replace "x" " 𝄪"
 
 
 

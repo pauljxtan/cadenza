@@ -16,7 +16,7 @@ module Chord exposing
 
 import Interval exposing (Interval(..), Quality(..), applyInterval)
 import List
-import Note exposing (Note, strToNote, noteToStr)
+import Note exposing (Note, noteToStr, strToNote)
 
 
 
@@ -49,42 +49,42 @@ augmentedTriad inversion root =
 
 diminishedSeventh : Int -> Note -> List Note
 diminishedSeventh inversion root =
-    diminishedTriad inversion root ++ [ applyInterval root Dim7 ] |> invert inversion
+    diminishedTriad 0 root ++ [ applyInterval root Dim7 ] |> invert inversion
 
 
 halfDiminishedSeventh : Int -> Note -> List Note
 halfDiminishedSeventh inversion root =
-    diminishedTriad inversion root ++ [ applyInterval root Min7 ] |> invert inversion
+    diminishedTriad 0 root ++ [ applyInterval root Min7 ] |> invert inversion
 
 
 minorSeventh : Int -> Note -> List Note
 minorSeventh inversion root =
-    minorTriad inversion root ++ [ applyInterval root Min7 ] |> invert inversion
+    minorTriad 0 root ++ [ applyInterval root Min7 ] |> invert inversion
 
 
 minorMajorSeventh : Int -> Note -> List Note
 minorMajorSeventh inversion root =
-    minorTriad inversion root ++ [ applyInterval root Maj7 ] |> invert inversion
+    minorTriad 0 root ++ [ applyInterval root Maj7 ] |> invert inversion
 
 
 dominantSeventh : Int -> Note -> List Note
 dominantSeventh inversion root =
-    majorTriad inversion root ++ [ applyInterval root Min7 ] |> invert inversion
+    majorTriad 0 root ++ [ applyInterval root Min7 ] |> invert inversion
 
 
 majorSeventh : Int -> Note -> List Note
 majorSeventh inversion root =
-    majorTriad inversion root ++ [ applyInterval root Maj7 ] |> invert inversion
+    majorTriad 0 root ++ [ applyInterval root Maj7 ] |> invert inversion
 
 
 augmentedSeventh : Int -> Note -> List Note
 augmentedSeventh inversion root =
-    augmentedTriad inversion root ++ [ applyInterval root Min7 ] |> invert inversion
+    augmentedTriad 0 root ++ [ applyInterval root Min7 ] |> invert inversion
 
 
 augmentedMajorSeventh : Int -> Note -> List Note
 augmentedMajorSeventh inversion root =
-    augmentedTriad inversion root ++ [ applyInterval root Maj7 ] |> invert inversion
+    augmentedTriad 0 root ++ [ applyInterval root Maj7 ] |> invert inversion
 
 
 
