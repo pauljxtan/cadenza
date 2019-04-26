@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg(..), init, main, update, view)
+port module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
 import Chord
@@ -17,6 +17,7 @@ import Html
     exposing
         ( Html
         , a
+        , button
         , div
         , footer
         , h1
@@ -33,8 +34,9 @@ import Html
         , th
         , tr
         )
-import Html.Attributes exposing (align, class, href, maxlength, placeholder, src, value)
-import Html.Events exposing (onInput)
+import Html.Attributes exposing (align, class, href, id, maxlength, placeholder, src, value)
+import Html.Events exposing (onClick, onInput)
+import Json.Encode exposing (encode, list, object, string)
 import Note exposing (Note, noteToStr, strToNote)
 
 
@@ -46,6 +48,7 @@ type alias Model =
     { key : String
     , chords : Dict String (List String)
     , inversion : Int
+    , message : String
     }
 
 
@@ -54,6 +57,7 @@ init =
     ( { key = ""
       , chords = chordsEmpty
       , inversion = 0
+      , message = ""
       }
     , Cmd.none
     )
@@ -77,6 +81,9 @@ chordsEmpty =
 ---- UPDATE ----
 
 
+port toJs : String -> Cmd msg
+
+
 type Msg
     = ChangeKey String
     | ChangeInversion String
@@ -84,12 +91,56 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    -- TODO: Clean this up
     case msg of
         ChangeKey newKey ->
-            ( model |> updateKey newKey, Cmd.none )
+            let
+                newModel =
+                    model |> updateKey newKey
+            in
+            ( newModel, encodeChords newModel |> toJs )
 
         ChangeInversion newInversion ->
-            ( model |> updateInversion newInversion, Cmd.none )
+            let
+                newModel =
+                    model |> updateInversion newInversion
+            in
+            ( newModel, encodeChords newModel |> toJs )
+
+
+encodeChords : Model -> String
+encodeChords model =
+    let
+        encodable =
+            model.chords
+                |> Dict.keys
+                |> List.map
+                    (\k ->
+                        ( k
+                        , model.chords
+                            |> Dict.get k
+                            |> Maybe.withDefault [ "", "", "", "" ]
+                            |> encodeNotesAndAccidentals model
+                            |> String.join ","
+                            |> string
+                        )
+                    )
+                |> object
+    in
+    encode 0 encodable
+
+
+encodeNotesAndAccidentals : Model -> List String -> List String
+encodeNotesAndAccidentals model notes =
+    case notes of
+        [ "", "", "", "" ] ->
+            [ "", "", "", "", "", "", "", "" ]
+
+        _ ->
+            [ notes |> List.map (\x -> x |> String.left 1)
+            , notes |> List.map (\x -> x |> String.dropLeft 1)
+            ]
+                |> List.concat
 
 
 updateKey : String -> Model -> Model
@@ -192,6 +243,7 @@ view model =
                             ]
                         ]
                     ]
+                , div [ id "staff", class "has-text-centered" ] []
                 , div [ class "" ]
                     [ table [ class "table" ]
                         ([ tr []
@@ -204,11 +256,6 @@ view model =
                     ]
                 ]
             ]
-        --, footer [ class "footer" ]
-            --[ div [ class "content has-text-centered" ]
-                --[ p [] [ text "Built with Elm by ", a [ href "https://paultan.ca" ] [ text "Paul Tan" ] ]
-                --]
-            --]
         ]
 
 
@@ -230,8 +277,8 @@ unicodeAccidentals str =
     str
         |> String.replace "bb" " 𝄫"
         |> String.replace "b" "♭"
+        |> String.replace "##" " 𝄪"
         |> String.replace "#" "♯"
-        |> String.replace "x" " 𝄪"
 
 
 

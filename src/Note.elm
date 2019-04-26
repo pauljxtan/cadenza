@@ -284,7 +284,8 @@ accidentalToStr accidental =
             "#"
 
         DoubleSharp ->
-            "x"
+          -- We use "##" instead of "x" for compatibility with VexFlow
+            "##"
 
 
 
