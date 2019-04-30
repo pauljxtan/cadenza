@@ -1,97 +1,94 @@
-import "./main.css";
-import { Elm } from "./Main.elm";
-import registerServiceWorker from "./registerServiceWorker";
+import './vendor/bulma-0.7.4.min.css'
+import './vendor/google-crimson-text.css'
+import './main.css'
+import { Elm } from './Main.elm'
+import registerServiceWorker from './registerServiceWorker'
+import Vex from '../static/vendor/vexflow-min.js'
 
 var app = Elm.Main.init({
-    node: document.getElementById("root")
-});
+  node: document.getElementById('root')
+})
 
-app.ports.toJs.subscribe(function(str) {
-    render(JSON.parse(str));
-});
+app.ports.toJs.subscribe(function (str) {
+  render(JSON.parse(str))
+})
 
-registerServiceWorker();
+registerServiceWorker()
 
-var VF = Vex.Flow;
-var div = document.getElementById("staff");
-render("");
+// ---- VexFlow stuff below
 
-function render(data) {
-    div.innerHTML = "";
+const TOTAL_NOTES_WIDTH = 575
+const SVG_WIDTH = 650
+const SVG_HEIGHT = 150
+const OCTAVE_NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
 
-    var [context, stave] = emptyStave();
+var VF = Vex.Flow
+var div = document.getElementById('staff')
+render('')
 
-    // Nothing to draw
-    if (data == "" || data["Augmented"].startsWith(",,,")) return;
+/** Draws notes on the staff */
+function render (data) {
+  div.innerHTML = ''
 
-    var notes = getNotes(data);
+  var [context, stave] = emptyStave()
 
-    var voice = new VF.Voice({ num_beats: 32, beat_value: 4 });
-    voice.addTickables(notes);
+  // Nothing to draw
+  if (data === '' || data['Augmented'].startsWith(',,,')) return
 
-    // Justify notes
-    var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 500);
+  var voice = new VF.Voice({ num_beats: 32, beat_value: 4 })
+  voice.addTickables(getChords(data))
 
-    voice.draw(context, stave);
+  // Justify notes
+  var formatter = new VF.Formatter()
+  formatter.joinVoices([voice]).format([voice], TOTAL_NOTES_WIDTH)
+
+  voice.draw(context, stave)
 }
 
-function emptyStave() {
-    var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+/** Returns an empty staff. */
+function emptyStave () {
+  var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG)
 
-    // Size of SVG
-    renderer.resize(575, 150);
-    var context = renderer.getContext();
+  // Size of SVG
+  renderer.resize(SVG_WIDTH, SVG_HEIGHT)
+  var context = renderer.getContext()
 
-    var stave = new VF.Stave(0, 0, 575)
-        .addClef("treble")
-        .addTimeSignature("4/4")
-        .setContext(context)
-        .draw();
-    return [context, stave];
+  var stave = new VF.Stave(0, 0, SVG_WIDTH)
+    .addClef('treble')
+    .addTimeSignature('4/4')
+    .setContext(context)
+    .draw()
+  return [context, stave]
 }
 
-// TODO: Make this function less hacky
-function getNotes(data) {
-    return Object.keys(data).map(function(chordName) {
-        var notes = data[chordName].split(",").slice(0, 4);
-        var accs = data[chordName].split(",").slice(4, 8);
+/** Returns an array of StaveNote objects corresponding to chords. */
+function getChords (data) {
+  return Object.keys(data).map(function (chordName) {
+    const elems = data[chordName].split(',')
+    const notes = elems.slice(0, 4)
+    const accs = elems.slice(4, 8)
 
-        var keys = [];
-        var octave = 4;
-        var raised = false;
-        var tonic = notes[0];
+    const tonic = notes[0]
 
-        for (var i = 0; i < 4; i++) {
-            if (!raised && i == 1 && ["B", "A"].includes(tonic)) {
-                octave += 1;
-                raised = true;
-            }
-            if (!raised && i == 2 && ["B", "A", "G", "F"].includes(tonic)) {
-                octave += 1;
-                raised = true;
-            }
-            if (
-                !raised &&
-                i == 3 &&
-                ["B", "A", "G", "F", "E", "D"].includes(tonic)
-            ) {
-                octave += 1;
-                raised = true;
-            }
-            keys.push(notes[i] + "/" + octave);
-        }
+    var keys = []
+    var octave = 4
 
-        var note = new VF.StaveNote({
-            clef: "treble",
-            keys: keys,
-            duration: "w"
-        });
+    notes.forEach(function (note) {
+      if (octave === 4 && OCTAVE_NOTES.indexOf(note) < OCTAVE_NOTES.indexOf(tonic)) { octave += 1 }
+      keys.push(`${note}/${octave}`)
+    })
 
-        for (var i = 0; i < 4; i++) {
-            if (accs[i] != "") {
-                note = note.addAccidental(i, new VF.Accidental(accs[i]));
-            }
-        }
-        return note;
-    });
+    var chord = new VF.StaveNote({
+      clef: 'treble',
+      keys: keys,
+      duration: 'w'
+    })
+
+    // Add accidental if needed to each note
+    for (var [i, acc] of accs.entries()) {
+      if (acc !== '') { chord = chord.addAccidental(i, new VF.Accidental(acc)) }
+    }
+
+    return chord
+  })
 }
