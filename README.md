@@ -8,5 +8,6 @@ A simple Elm app for chord analysis.
 
 - [x] Display basic seventh chords given tonic and inversion
   - [ ] More chords (altered, added-tone, suspended, etc.)
-- [ ] Render notation (e.g. with [vexflow](http://www.vexflow.com/))
+- [x] Render notation with [vexflow](http://www.vexflow.com/)
+  - [ ] Make it look better
 - [ ] Identify possible chord given notes (lots more work needed on the backend)

@@ -1,14 +1,30 @@
-/*
-  elm-hot creates an additional div wrapper around the app to make HMR possible.
-  This could break styling in development mode if you are using Elm UI.
-
-  More context in the issue:
-    https://github.com/halfzebra/create-elm-app/issues/320
-*/
 [data-elm-hot="true"] {
   height: inherit;
 }
 
-.footer {
-  padding: 1rem
+body {
+  font-family: "Crimson Text", serif;
+}
+
+.chord-name-cell {
+  width: 30%;
+}
+.chord-interval-cell, .chord-note-cell {
+  width: 10%;
+}
+
+.interval-dim {
+  background-color: rgba(250, 205, 205, 0.5);
+}
+.interval-min {
+  background-color: rgba(248, 250, 205, 0.5);
+}
+.interval-maj {
+  background-color: rgba(210, 250, 205, 0.5);
+}
+.interval-per {
+  background-color: rgba(205, 250, 236, 0.5);
+}
+.interval-aug {
+  background-color: rgba(236, 205, 250, 0.5);
 }
