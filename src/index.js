@@ -3,7 +3,7 @@ import './vendor/google-crimson-text.css'
 import './main.css'
 import { Elm } from './Main.elm'
 import registerServiceWorker from './registerServiceWorker'
-import Vex from '../static/vendor/vexflow-min.js'
+import Vex from './vendor/vexflow-min.js'
 
 var app = Elm.Main.init({
   node: document.getElementById('root')

@@ -1,11 +1,11 @@
 {
-  "main.css": "/cadenza/static/css/main.c5701cd6.chunk.css",
-  "main.js": "/cadenza/static/js/main.103705dd.chunk.js",
-  "main.css.map": "/cadenza/static/css/main.c5701cd6.chunk.css.map",
-  "main.js.map": "/cadenza/static/js/main.103705dd.chunk.js.map",
+  "main.css": "/cadenza/static/css/main.0f4a4cda.chunk.css",
+  "main.js": "/cadenza/static/js/main.ab0e4c7d.chunk.js",
+  "main.css.map": "/cadenza/static/css/main.0f4a4cda.chunk.css.map",
+  "main.js.map": "/cadenza/static/js/main.ab0e4c7d.chunk.js.map",
   "runtime~main.js": "/cadenza/static/js/runtime~main.216190cc.js",
   "runtime~main.js.map": "/cadenza/static/js/runtime~main.216190cc.js.map",
-  "vendors~main.js": "/cadenza/static/js/vendors~main.3ca81432.chunk.js",
-  "vendors~main.js.map": "/cadenza/static/js/vendors~main.3ca81432.chunk.js.map",
+  "vendors~main.js": "/cadenza/static/js/vendors~main.43974d58.chunk.js",
+  "vendors~main.js.map": "/cadenza/static/js/vendors~main.43974d58.chunk.js.map",
   "index.html": "/cadenza/index.html"
 }
