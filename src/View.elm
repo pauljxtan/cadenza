@@ -150,6 +150,6 @@ unicodeAccidentals : String -> String
 unicodeAccidentals str =
     str
         |> String.replace "bb" " 𝄫"
-        |> String.replace "b" "♭"
+        |> String.replace "b" " ♭"
         |> String.replace "##" " 𝄪"
-        |> String.replace "#" "♯"
+        |> String.replace "#" " ♯"

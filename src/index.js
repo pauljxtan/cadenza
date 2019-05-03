@@ -1,9 +1,6 @@
-import './vendor/bulma-0.7.4.min.css'
-import './vendor/google-crimson-text.css'
 import './main.css'
 import { Elm } from './Main.elm'
-import registerServiceWorker from './registerServiceWorker'
-import Vex from './vendor/vexflow-min.js'
+//import registerServiceWorker from './registerServiceWorker'
 
 var app = Elm.Main.init({
   node: document.getElementById('root')
@@ -13,7 +10,8 @@ app.ports.toJs.subscribe(function (str) {
   render(JSON.parse(str))
 })
 
-registerServiceWorker()
+// For PWA caching
+//registerServiceWorker()
 
 // ---- VexFlow stuff below
 
