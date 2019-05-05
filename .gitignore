@@ -2,6 +2,8 @@
 elm-stuff
 # elm-repl generated files
 repl-temp-*
+# prod build
+build
 
 # dev stuff
 node_modules
