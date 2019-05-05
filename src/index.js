@@ -6,8 +6,9 @@ var app = Elm.Main.init({
   node: document.getElementById('root')
 })
 
-app.ports.toJs.subscribe(function (str) {
-  render(JSON.parse(str))
+// Elm subscription: fires on each model update
+app.ports.toJs.subscribe(function (data) {
+  render(JSON.parse(data))
 })
 
 // For PWA caching
@@ -19,26 +20,30 @@ const TOTAL_NOTES_WIDTH = 600
 const SVG_WIDTH = 650
 const SVG_HEIGHT = 150
 const OCTAVE_NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+const CHORD_SYMBOLS = ['o7', 'ø7', 'm7', 'mM7', '7', 'M7', '+7', '+M7']
 
 var VF = Vex.Flow
 var div = document.getElementById('staff')
+
+// Render an empty staff
 render('')
 
-/** Draws notes on the staff */
+/** Draws notes and chord symbols on the staff. */
 function render (data) {
+  // TODO: There may be a better way to clear the staff instead of
+  // re-rendering everything from scratch each time
   div.innerHTML = ''
 
   var [context, stave] = emptyStave()
 
   // Nothing to draw
-  if (data === '' || data['Augmented'].startsWith(',,,')) return
-  var key = unicodeAccidentals(data['Augmented'].split(',')[0])
+  if (data === '' || data['key'] === '') return
 
   var voice = new VF.Voice({ num_beats: 32, beat_value: 4 })
   voice.addTickables(getChords(data))
 
   var voice2 = new VF.Voice({ num_beats: 32, beat_value: 4 })
-  var text = getSymbols(key, stave)
+  var text = getSymbols(data['key'], stave)
   voice2.addTickables(text)
 
   var voices = [voice, voice2]
@@ -61,7 +66,6 @@ function emptyStave () {
 
   var stave = new VF.Stave(0, 0, SVG_WIDTH)
     .addClef('treble')
-    // .addTimeSignature('4/4')
     .setContext(context)
     .draw()
 
@@ -70,19 +74,18 @@ function emptyStave () {
 
 /** Returns an array of StaveNote objects corresponding to chords. */
 function getChords (data) {
-  return Object.keys(data).map(function (chordName) {
-    const elems = data[chordName].split(',')
-    const notes = elems.slice(1, 5)
-    const accs = elems.slice(5, 9)
+  const chords = data['chords']
 
-    const tonic = notes[0]
+  return Object.keys(chords).map(function (chordName) {
+    const elems = chords[chordName].split(',')
+    const notes = elems.slice(0, 4)
+    const accs = elems.slice(4, 8)
 
-    var keys = []
+    // A bit of logic is needed to make the notes line up properly across octaves
     var octave = 4
-
-    notes.forEach(function (note) {
-      if (octave === 4 && OCTAVE_NOTES.indexOf(note) < OCTAVE_NOTES.indexOf(tonic)) { octave += 1 }
-      keys.push(`${note}/${octave}`)
+    var keys = notes.map(function (note) {
+      if (octave === 4 && OCTAVE_NOTES.indexOf(note) < OCTAVE_NOTES.indexOf(notes[0])) { octave += 1 }
+      return `${note}/${octave}`
     })
 
     var chord = new VF.StaveNote({
@@ -102,7 +105,7 @@ function getChords (data) {
 
 /** Returns an array of TextNote objects corresponding to chord symbols. */
 function getSymbols (key, stave) {
-  return ['o7', 'ø7', 'm7', 'mM7', '7', 'M7', '+7', '+M7'].map(function (chord) {
+  return CHORD_SYMBOLS.map(function (chord) {
     return new VF.TextNote({ text: key + chord, duration: 'w' })
       .setLine(1)
       .setStave(stave)
@@ -110,6 +113,9 @@ function getSymbols (key, stave) {
   })
 }
 
-function unicodeAccidentals(text) {
-  return text.replace("bb", "𝄫").replace("b","♭").replace("##","𝄪").replace("#","♯")
+/** Replaces accidentals with nicer-looking unicode equivalents.
+ * Note that this must be done separately on both the Elm and JS sides, since
+ * VexFlow expects "b" and "#" for accidentals. */
+function unicodeAccidentals (text) {
+  return text.replace('bb', '𝄫').replace('b', '♭').replace('##', '𝄪').replace('#', '♯')
 }

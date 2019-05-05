@@ -4,16 +4,18 @@ import Dict
 import Html exposing (Html, div, h1, input, label, option, p, section, select, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (align, class, colspan, href, id, maxlength, placeholder, src, value)
 import Html.Events exposing (onClick, onInput)
-import Model exposing (Model, Msg(..), chordInfoEmpty, chordIntervals)
+import Model exposing (Model, Msg(..), chordIntervals, chordNotesEmpty)
 
 
+{-| The entire view.
+-}
 view : Model -> Html Msg
 view model =
     div []
         [ titleSection
         , section [ class "section" ]
             [ div [ class "content" ]
-                [ inputDiv model
+                [ userInputContainer model
                 , staffDiv
                 , chordTable model
                 ]
@@ -21,25 +23,31 @@ view model =
         ]
 
 
+{-| The title element.
+-}
 titleSection : Html Msg
 titleSection =
     section [ class "hero is-small is-bold" ]
         [ div [ class "hero-body" ]
             [ div [ class "container" ]
-                [ h1 [ class "title" ] [ text "Chord reference" ]
+                [ h1 [ class "title" ] [ text "Chord calculator" ]
                 ]
             ]
         ]
 
 
-inputDiv : Model -> Html Msg
-inputDiv model =
+{-| A wrapper around the user input components.
+-}
+userInputContainer : Model -> Html Msg
+userInputContainer model =
     div [ class "columns" ]
         [ div [ class "column" ] [ tonicField model ]
         , div [ class "column" ] [ inversionField model ]
         ]
 
 
+{-| A text input for specifying a chord tonic.
+-}
 tonicField : Model -> Html Msg
 tonicField model =
     div [ class "field is-horizontal" ]
@@ -61,6 +69,8 @@ tonicField model =
         ]
 
 
+{-| A dropdown for selecting a chord inversion.
+-}
 inversionField : Model -> Html Msg
 inversionField model =
     div [ class "field is-horizontal" ]
@@ -80,21 +90,26 @@ inversionField model =
         ]
 
 
+{-| An empty staff to be populated on the JS side.
+-}
 staffDiv : Html Msg
 staffDiv =
-    -- Populated on JS side
     div [ id "staff", class "has-text-centered" ] []
 
 
+{-| The table containing all chord information.
+-}
 chordTable : Model -> Html Msg
 chordTable model =
     table [ id "chord-table", class "table is-bordered is-hoverable" ]
         [ thead [] [ chordTableHeader ]
         , tbody []
-            (Model.chordNames |> List.map (chordRow model))
+            (Model.chordTypes |> List.map (chordRow model))
         ]
 
 
+{-| The table header.
+-}
 chordTableHeader : Html Msg
 chordTableHeader =
     tr []
@@ -104,22 +119,26 @@ chordTableHeader =
         ]
 
 
+{-| A single row in the table for a given chord.
+-}
 chordRow : Model -> String -> Html Msg
-chordRow model chordName =
+chordRow model chordType =
     let
         intervals =
-            chordIntervals chordName |> List.map intervalCell
+            chordIntervals chordType |> List.map intervalCell
 
         notes =
             model.chords
-                |> Dict.get chordName
-                |> Maybe.withDefault (chordInfoEmpty chordName)
+                |> Dict.get chordType
+                |> Maybe.withDefault chordNotesEmpty
                 |> List.map unicodeAccidentals
                 |> List.map (\s -> td [ class "chord-note-cell" ] [ text s ])
     in
-    tr [] ([ td [ class "chord-name-cell" ] [ text chordName ] ] ++ intervals ++ notes)
+    tr [] ([ td [ class "chord-name-cell" ] [ text chordType ] ] ++ intervals ++ notes)
 
 
+{-| A single coloured cell in the intervals section of the table.
+-}
 intervalCell : String -> Html Msg
 intervalCell interval =
     let
@@ -146,6 +165,8 @@ intervalCell interval =
     td [ class ("chord-interval-cell " ++ colourClass) ] [ text interval ]
 
 
+{-| Replaces accidentals wtih nicer-looking unicode equivalents.
+-}
 unicodeAccidentals : String -> String
 unicodeAccidentals str =
     str
