@@ -140,10 +140,12 @@ encodeNotesAndAccidentals model notes =
             [ "", "", "", "", "", "", "", "" ]
 
         _ ->
-            [ notes |> List.map (\x -> x |> String.left 1)
+            let keyCapitalized = String.toUpper (String.left 1 model.key) ++ (String.dropLeft 1 model.key) 
+            in
+            [keyCapitalized] ++ ([ notes |> List.map (\x -> x |> String.left 1)
             , notes |> List.map (\x -> x |> String.dropLeft 1)
             ]
-                |> List.concat
+                |> List.concat)
 
 
 updateKey : String -> Model -> Model

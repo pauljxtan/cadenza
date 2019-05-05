@@ -32,9 +32,7 @@ function render (data) {
 
   // Nothing to draw
   if (data === '' || data['Augmented'].startsWith(',,,')) return
-  console.log(data['Augmented'])
-  var elems = data['Augmented'].split(',')
-  var key = unicodeAccidentals(elems[0] + elems[5])
+  var key = unicodeAccidentals(data['Augmented'].split(',')[0])
 
   var voice = new VF.Voice({ num_beats: 32, beat_value: 4 })
   voice.addTickables(getChords(data))
@@ -74,8 +72,8 @@ function emptyStave () {
 function getChords (data) {
   return Object.keys(data).map(function (chordName) {
     const elems = data[chordName].split(',')
-    const notes = elems.slice(0, 4)
-    const accs = elems.slice(4, 8)
+    const notes = elems.slice(1, 5)
+    const accs = elems.slice(5, 9)
 
     const tonic = notes[0]
 
