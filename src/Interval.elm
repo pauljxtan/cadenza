@@ -141,92 +141,95 @@ applyInterval note interval =
             note
 
         Aug1 ->
-            applyIntervalBySemitones note 1 1
+            note |> applyIntervalBySemitones 1 1
 
         Dim2 ->
-            applyIntervalBySemitones note 0 2
+            note |> applyIntervalBySemitones 0 2
 
         Min2 ->
-            applyIntervalBySemitones note 1 2
+            note |> applyIntervalBySemitones 1 2
 
         Maj2 ->
-            applyIntervalBySemitones note 2 2
+            note |> applyIntervalBySemitones 2 2
 
         Aug2 ->
-            applyIntervalBySemitones note 3 2
+            note |> applyIntervalBySemitones 3 2
 
         Dim3 ->
-            applyIntervalBySemitones note 2 3
+            note |> applyIntervalBySemitones 2 3
 
         Min3 ->
-            applyIntervalBySemitones note 3 3
+            note |> applyIntervalBySemitones 3 3
 
         Maj3 ->
-            applyIntervalBySemitones note 4 3
+            note |> applyIntervalBySemitones 4 3
 
         Aug3 ->
-            applyIntervalBySemitones note 5 3
+            note |> applyIntervalBySemitones 5 3
 
         Dim4 ->
-            applyIntervalBySemitones note 4 4
+            note |> applyIntervalBySemitones 4 4
 
         Per4 ->
-            applyIntervalBySemitones note 5 4
+            note |> applyIntervalBySemitones 5 4
 
         Aug4 ->
-            applyIntervalBySemitones note 6 4
+            note |> applyIntervalBySemitones 6 4
 
         Dim5 ->
-            applyIntervalBySemitones note 6 5
+            note |> applyIntervalBySemitones 6 5
 
         Per5 ->
-            applyIntervalBySemitones note 7 5
+            note |> applyIntervalBySemitones 7 5
 
         Aug5 ->
-            applyIntervalBySemitones note 8 5
+            note |> applyIntervalBySemitones 8 5
 
         Dim6 ->
-            applyIntervalBySemitones note 7 6
+            note |> applyIntervalBySemitones 7 6
 
         Min6 ->
-            applyIntervalBySemitones note 8 6
+            note |> applyIntervalBySemitones 8 6
 
         Maj6 ->
-            applyIntervalBySemitones note 9 6
+            note |> applyIntervalBySemitones 9 6
 
         Aug6 ->
-            applyIntervalBySemitones note 10 6
+            note |> applyIntervalBySemitones 10 6
 
         Dim7 ->
-            applyIntervalBySemitones note 9 7
+            note |> applyIntervalBySemitones 9 7
 
         Min7 ->
-            applyIntervalBySemitones note 10 7
+            note |> applyIntervalBySemitones 10 7
 
         Maj7 ->
-            applyIntervalBySemitones note 11 7
+            note |> applyIntervalBySemitones 11 7
 
         Aug7 ->
-            applyIntervalBySemitones note 12 7
+            note |> applyIntervalBySemitones 12 7
 
         Dim8 ->
-            applyIntervalBySemitones note 11 8
+            note |> applyIntervalBySemitones 11 8
 
         Per8 ->
             note
 
 
-applyIntervalBySemitones : Note -> Int -> Int -> Note
-applyIntervalBySemitones note nSemitones diaNum =
+applyIntervalBySemitones : Int -> Int -> Note -> Note
+applyIntervalBySemitones nSemitones diaNum note =
     let
         raised =
-            raiseNoteBySemitones nSemitones note
+            note |> raiseNoteBySemitones nSemitones
+
+        candidates =
+            [ raised ] ++ enharmonics raised
     in
-    filterByDiaNum note ([ raised ] ++ enharmonics raised) diaNum
+    candidates |> filterByDiaNum note diaNum
 
 
-filterByDiaNum : Note -> List Note -> Int -> Note
-filterByDiaNum note notes diaNum =
+filterByDiaNum : Note -> Int -> List Note -> Note
+filterByDiaNum note diaNum notes =
     notes
         |> List.filter (\n -> n.pitch == raisePitch (diaNum - 1) note.pitch)
         |> List.head

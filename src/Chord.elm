@@ -98,7 +98,7 @@ invert n chord =
             chord
 
         _ ->
-            invert (n - 1) (invertOnce chord)
+            chord |> invertOnce |> invert (n - 1)
 
 
 invertOnce : List Note -> List Note

@@ -1,4 +1,4 @@
-module Model exposing (Model, Msg(..), chordNotesEmpty, chordIntervals, chordTypes, init, update)
+module Model exposing (Model, Msg(..), chordIntervals, chordNotesEmpty, chordTypes, init, update)
 
 import Chord
 import Dict exposing (Dict)
@@ -59,7 +59,8 @@ chordsEmpty =
 {-| A placeholder for an empty chord.
 -}
 chordNotesEmpty : List String
-chordNotesEmpty = [ "", "", "", "" ]
+chordNotesEmpty =
+    [ "", "", "", "" ]
 
 
 {-| Returns the intervals for a given chord.
@@ -112,14 +113,14 @@ update msg model =
         ChangeKey newKey ->
             let
                 newModel =
-                    updateKey newKey model
+                    model |> updateKey newKey
             in
             ( newModel, encodeData newModel |> toJs )
 
         ChangeInversion newInversion ->
             let
                 newModel =
-                    updateInversion newInversion model
+                    model |> updateInversion newInversion
             in
             ( newModel, encodeData newModel |> toJs )
 
@@ -130,7 +131,7 @@ updateKey : String -> Model -> Model
 updateKey newKey model =
     case Note.strToNote newKey of
         Just note ->
-            { model | key = newKey, chords = newChords note model.inversion }
+            { model | key = newKey, chords = model.inversion |> newChords note }
 
         Nothing ->
             { model | key = newKey, chords = chordsEmpty }
@@ -144,7 +145,7 @@ updateInversion newInversion model =
         Just inversion ->
             case Note.strToNote model.key of
                 Just key ->
-                    { model | inversion = inversion, chords = newChords key inversion }
+                    { model | inversion = inversion, chords = inversion |> newChords key }
 
                 Nothing ->
                     { model | inversion = inversion }
@@ -157,7 +158,7 @@ updateInversion newInversion model =
 -}
 newChords key inversion =
     chordTypes
-        |> List.map (\chordType -> ( chordType, chordNotes chordType inversion key ))
+        |> List.map (\chordType -> ( chordType, key |> chordNotes chordType inversion ))
         |> Dict.fromList
 
 
@@ -167,28 +168,28 @@ chordNotes : String -> Int -> Note.Note -> List String
 chordNotes chordType inversion key =
     case chordType of
         "Diminished" ->
-            Chord.diminishedSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.diminishedSeventh inversion |> List.map Note.noteToStr
 
         "Half-diminished" ->
-            Chord.halfDiminishedSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.halfDiminishedSeventh inversion |> List.map Note.noteToStr
 
         "Minor" ->
-            Chord.minorSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.minorSeventh inversion |> List.map Note.noteToStr
 
         "Minor-major" ->
-            Chord.minorMajorSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.minorMajorSeventh inversion |> List.map Note.noteToStr
 
         "Dominant" ->
-            Chord.dominantSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.dominantSeventh inversion |> List.map Note.noteToStr
 
         "Major" ->
-            Chord.majorSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.majorSeventh inversion |> List.map Note.noteToStr
 
         "Augmented" ->
-            Chord.augmentedSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.augmentedSeventh inversion |> List.map Note.noteToStr
 
         "Augmented-major" ->
-            Chord.augmentedMajorSeventh inversion key |> List.map Note.noteToStr
+            key |> Chord.augmentedMajorSeventh inversion |> List.map Note.noteToStr
 
         _ ->
             []
@@ -229,7 +230,7 @@ encodeChords model =
                 ( chordType
                 , model.chords
                     |> Dict.get chordType
-                    |> Maybe.withDefault [ "", "", "", "" ]
+                    |> Maybe.withDefault chordNotesEmpty
                     |> encodeNotesAndAccidentals model.key
                     |> String.join ","
                     |> Json.Encode.string
@@ -245,7 +246,7 @@ encodeNotesAndAccidentals key notes =
     -- Elems 1-4 : Notes (w/out accidentals)
     -- Elems 5-8 : Accidentals
     case notes of
-        ["", "", "", ""] ->
+        [ "", "", "", "" ] ->
             []
 
         _ ->

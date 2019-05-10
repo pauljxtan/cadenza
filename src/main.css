@@ -7,6 +7,10 @@ body {
   /*font-family: "Libre Baskerville", serif;*/
 }
 
+.footer {
+  padding: 1rem;
+}
+
 .chord-name-cell {
   width: 30%;
 }

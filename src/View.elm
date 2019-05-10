@@ -1,9 +1,10 @@
 module View exposing (view)
 
 import Dict
-import Html exposing (Html, div, h1, input, label, option, p, section, select, table, tbody, td, text, th, thead, tr)
+import Html exposing (Html, a, div, footer, h1, input, label, option, p, section, select, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (align, class, colspan, href, id, maxlength, placeholder, src, value)
 import Html.Events exposing (onClick, onInput)
+import List
 import Model exposing (Model, Msg(..), chordIntervals, chordNotesEmpty)
 
 
@@ -18,6 +19,7 @@ view model =
                 [ userInputContainer model
                 , staffDiv
                 , chordTable model
+                , theFooter
                 ]
             ]
         ]
@@ -78,12 +80,8 @@ inversionField model =
         , div [ class "field-body" ]
             [ div [ class "field" ]
                 [ div [ class "select" ]
-                    [ select [ class "", onInput ChangeInversion ]
-                        [ option [ value "0" ] [ text "0" ]
-                        , option [ value "1" ] [ text "1" ]
-                        , option [ value "2" ] [ text "2" ]
-                        , option [ value "3" ] [ text "3" ]
-                        ]
+                    [ select [ class "", onInput ChangeInversion ] <|
+                        List.map (\i -> option [ value i ] [ text i ]) [ "0", "1", "2", "3" ]
                     ]
                 ]
             ]
@@ -101,22 +99,19 @@ staffDiv =
 -}
 chordTable : Model -> Html Msg
 chordTable model =
+    let
+        header =
+            tr []
+                [ th [ class "has-text-centered" ] [ text "Chord" ]
+                , th [ colspan 3, class "has-text-centered" ] [ text "Intervals (root position)" ]
+                , th [ colspan 4, class "has-text-centered" ] [ text "Notes" ]
+                ]
+
+        rows =
+            Model.chordTypes |> List.map (chordRow model)
+    in
     table [ id "chord-table", class "table is-bordered is-hoverable" ]
-        [ thead [] [ chordTableHeader ]
-        , tbody []
-            (Model.chordTypes |> List.map (chordRow model))
-        ]
-
-
-{-| The table header.
--}
-chordTableHeader : Html Msg
-chordTableHeader =
-    tr []
-        [ th [ class "has-text-centered" ] [ text "Chord" ]
-        , th [ colspan 3, class "has-text-centered" ] [ text "Intervals (root position)" ]
-        , th [ colspan 4, class "has-text-centered" ] [ text "Notes" ]
-        ]
+        [ thead [] [ header ], tbody [] rows ]
 
 
 {-| A single row in the table for a given chord.
@@ -162,7 +157,7 @@ intervalCell interval =
                 _ ->
                     ""
     in
-    td [ class ("chord-interval-cell " ++ colourClass) ] [ text interval ]
+    td [ class <| "chord-interval-cell " ++ colourClass ] [ text interval ]
 
 
 {-| Replaces accidentals wtih nicer-looking unicode equivalents.
@@ -174,3 +169,18 @@ unicodeAccidentals str =
         |> String.replace "b" " ♭"
         |> String.replace "##" " 𝄪"
         |> String.replace "#" " ♯"
+
+
+theFooter : Html Msg
+theFooter =
+    let
+        line =
+            p []
+                [ text "Built with "
+                , a [ href "https://elm-lang.org/" ] [ text "Elm" ]
+                , text " and "
+                , a [ href "http://www.vexflow.com/" ] [ text "VexFlow" ]
+                , text "."
+                ]
+    in
+    footer [ class "footer" ] [ div [ class "content has-text-centered" ] [ line ] ]

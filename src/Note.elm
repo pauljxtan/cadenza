@@ -3,10 +3,10 @@ module Note exposing
     , Note
     , Pitch(..)
     , enharmonics
+    , noteToStr
     , raiseNoteBySemitones
     , raisePitch
     , strToNote
-    , noteToStr
     )
 
 import List
@@ -37,33 +37,32 @@ type Accidental
     | DoubleSharp
 
 
+accidentals : List Accidental
+accidentals =
+    [ DoubleFlat, Flat, Natural, Sharp, DoubleSharp ]
+
+
 enharmonics : Note -> List Note
 enharmonics note =
     let
         candidatePitches =
-            [ lowerPitch 2 note.pitch
-            , lowerPitch 1 note.pitch
+            [ note.pitch |> lowerPitch 2
+            , note.pitch |> lowerPitch 1
             , note.pitch
-            , raisePitch 1 note.pitch
-            , raisePitch 2 note.pitch
+            , note.pitch |> raisePitch 1
+            , note.pitch |> raisePitch 2
             ]
 
         candidateNotes =
             candidatePitches
-                |> List.concatMap
-                    (\p ->
-                        List.map (\a -> { pitch = p, accidental = a })
-                            [ DoubleFlat, Flat, Natural, Sharp, DoubleSharp ]
-                    )
+                |> List.concatMap (\p -> accidentals |> List.map (\a -> { pitch = p, accidental = a }))
 
         noteInt =
             noteToInt note
     in
     candidateNotes
-        |> List.filter
-            (\n ->
-                List.member (noteToInt n) [ noteInt - 12, noteInt, noteInt + 12 ] && n /= note
-            )
+        |> List.filter (\n -> [ noteInt - 12, noteInt, noteInt + 12 ] |> List.member (noteToInt n))
+        |> List.filter (\n -> n /= note)
 
 
 
@@ -77,7 +76,7 @@ raiseNoteBySemitones n note =
             note
 
         _ ->
-            raiseNoteBySemitones (n - 1) (raiseNoteBySemitone note)
+            note |> raiseNoteBySemitone |> raiseNoteBySemitones (n - 1)
 
 
 raiseNoteBySemitone : Note -> Note
@@ -96,7 +95,7 @@ lowerPitch n pitch =
             pitch
 
         _ ->
-            lowerPitch (n - 1) (lowerPitchOnce pitch)
+            pitch |> lowerPitchOnce |> lowerPitch (n - 1)
 
 
 raisePitch : Int -> Pitch -> Pitch
@@ -106,7 +105,7 @@ raisePitch n pitch =
             pitch
 
         _ ->
-            raisePitch (n - 1) (raisePitchOnce pitch)
+            pitch |> raisePitchOnce |> raisePitch (n - 1)
 
 
 lowerPitchOnce : Pitch -> Pitch
@@ -284,7 +283,7 @@ accidentalToStr accidental =
             "#"
 
         DoubleSharp ->
-          -- We use "##" instead of "x" for compatibility with VexFlow
+            -- We use "##" instead of "x" for compatibility with VexFlow
             "##"
 
 
