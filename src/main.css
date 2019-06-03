@@ -3,8 +3,18 @@
 }
 
 body {
-  font-family: "Crimson Text", serif;
-  /*font-family: "Libre Baskerville", serif;*/
+  /*font-family: "Crimson Text", serif;*/
+  font-family: "Libre Baskerville", serif;
+  /*font-size: 18px;*/
+}
+
+section {
+  padding: 0rem 1rem !important;
+  max-width: 960px;
+}
+
+#input-container {
+  margin-bottom: -0.5rem;
 }
 
 .footer {

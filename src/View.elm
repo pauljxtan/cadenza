@@ -42,7 +42,7 @@ titleSection =
 -}
 userInputContainer : Model -> Html Msg
 userInputContainer model =
-    div [ class "columns" ]
+    div [ id "input-container", class "columns" ]
         [ div [ class "column" ] [ tonicField model ]
         , div [ class "column" ] [ inversionField model ]
         ]
@@ -127,9 +127,9 @@ chordRow model chordType =
                 |> Dict.get chordType
                 |> Maybe.withDefault chordNotesEmpty
                 |> List.map unicodeAccidentals
-                |> List.map (\s -> td [ class "chord-note-cell" ] [ text s ])
+                |> List.map (\s -> td [ class "chord-note-cell has-text-centered" ] [ text s ])
     in
-    tr [] ([ td [ class "chord-name-cell" ] [ text chordType ] ] ++ intervals ++ notes)
+    tr [] ([ td [ class "chord-name-cell has-text-centered" ] [ text chordType ] ] ++ intervals ++ notes)
 
 
 {-| A single coloured cell in the intervals section of the table.
@@ -157,7 +157,7 @@ intervalCell interval =
                 _ ->
                     ""
     in
-    td [ class <| "chord-interval-cell " ++ colourClass ] [ text interval ]
+    td [ class <| "chord-interval-cell has-text-centered " ++ colourClass ] [ text interval ]
 
 
 {-| Replaces accidentals wtih nicer-looking unicode equivalents.

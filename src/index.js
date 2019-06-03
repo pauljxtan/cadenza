@@ -18,7 +18,7 @@ app.ports.toJs.subscribe(function (data) {
 
 const TOTAL_NOTES_WIDTH = 600
 const SVG_WIDTH = 650
-const SVG_HEIGHT = 150
+const SVG_HEIGHT = 100
 const OCTAVE_NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
 const CHORD_SYMBOLS = ['o7', 'ø7', 'm7', 'mM7', '7', 'M7', '+7', '+M7']
 
