@@ -12,7 +12,7 @@ import Model exposing (Model, Msg(..), chordIntervals, chordNotesEmpty)
 -}
 view : Model -> Html Msg
 view model =
-    div []
+    div [ class "container" ]
         [ titleSection
         , section [ class "section" ]
             [ div [ class "content" ]
@@ -165,10 +165,10 @@ intervalCell interval =
 unicodeAccidentals : String -> String
 unicodeAccidentals str =
     str
-        |> String.replace "bb" " 𝄫"
-        |> String.replace "b" " ♭"
-        |> String.replace "##" " 𝄪"
-        |> String.replace "#" " ♯"
+        |> String.replace "bb" "𝄫"
+        |> String.replace "b" "♭"
+        |> String.replace "##" "𝄪"
+        |> String.replace "#" "♯"
 
 
 theFooter : Html Msg

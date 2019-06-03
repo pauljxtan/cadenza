@@ -3,8 +3,8 @@
 }
 
 body {
-  /*font-family: "Crimson Text", serif;*/
-  font-family: "Libre Baskerville", serif;
+  font-family: "Crimson Text", serif;
+  /*font-family: "Libre Baskerville", serif;*/
   /*font-size: 18px;*/
 }
 
@@ -17,6 +17,12 @@ section {
   margin-bottom: -0.5rem;
 }
 
+#chord-table {
+  /*max-width: 960px;*/
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .footer {
   padding: 1rem;
 }
@@ -24,7 +30,8 @@ section {
 .chord-name-cell {
   width: 30%;
 }
-.chord-interval-cell, .chord-note-cell {
+.chord-interval-cell,
+.chord-note-cell {
   width: 10%;
 }
 
