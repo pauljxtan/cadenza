@@ -1,8 +1,8 @@
 module View exposing (view)
 
 import Dict
-import Html exposing (Html, a, div, footer, h1, input, label, option, p, section, select, table, tbody, td, text, th, thead, tr)
-import Html.Attributes exposing (align, class, colspan, href, id, maxlength, placeholder, src, value)
+import Html exposing (Html, a, div, footer, form, h1, input, label, option, p, section, select, span, table, tbody, td, text, th, thead, tr)
+import Html.Attributes exposing (align, class, colspan, for, href, id, maxlength, src, value)
 import Html.Events exposing (onClick, onInput)
 import List
 import Model exposing (Model, Msg(..), chordIntervals, chordNotesEmpty)
@@ -12,61 +12,48 @@ import Model exposing (Model, Msg(..), chordIntervals, chordNotesEmpty)
 -}
 view : Model -> Html Msg
 view model =
-    div [ class "container" ]
-        [ titleSection
-        , section [ class "section" ]
-            [ div [ class "content" ]
-                [ userInputContainer model
-                , staffDiv
-                , chordTable model
-                , theFooter
-                ]
+    section [ class "ph3 mw7 center" ]
+        [ title
+        , div []
+            [ userInputContainer model
+            , staffDiv
+            , chordTable model
+            , theFooter
             ]
         ]
 
 
 {-| The title element.
 -}
-titleSection : Html Msg
-titleSection =
-    section [ class "hero is-small is-bold" ]
-        [ div [ class "hero-body" ]
-            [ div [ class "container" ]
-                [ h1 [ class "title" ] [ text "Chord calculator" ]
-                ]
-            ]
-        ]
+title : Html Msg
+title =
+    h1 [] [ text "Chord calculator" ]
 
 
 {-| A wrapper around the user input components.
 -}
 userInputContainer : Model -> Html Msg
 userInputContainer model =
-    div [ id "input-container", class "columns" ]
-        [ div [ class "column" ] [ tonicField model ]
-        , div [ class "column" ] [ inversionField model ]
-        ]
+    div [ class "w-100 center" ] [ tonicField model, inversionField model ]
 
 
 {-| A text input for specifying a chord tonic.
 -}
 tonicField : Model -> Html Msg
 tonicField model =
-    div [ class "field is-horizontal" ]
-        [ div [ class "field-label is-normal" ] [ label [ class "label" ] [ text "Tonic" ] ]
-        , div [ class "field-body" ]
-            [ div [ class "field" ]
-                [ p [ class "control" ]
-                    [ input
-                        [ class "input"
-                        , placeholder "Enter a note, e.g. F#"
-                        , maxlength 2
-                        , value model.key
-                        , onInput ChangeKey
-                        ]
-                        []
-                    ]
+    form [ class "fl mr3" ]
+        [ div [ class "measure" ]
+            [ label [ class "b db mb2" ]
+                [ text "Tonic "
+                , span [ class "normal gray" ] [ text "(e.g. D, F#, Ab)" ]
                 ]
+            , input
+                [ class "db"
+                , maxlength 2
+                , value model.key
+                , onInput ChangeKey
+                ]
+                []
             ]
         ]
 
@@ -75,16 +62,10 @@ tonicField model =
 -}
 inversionField : Model -> Html Msg
 inversionField model =
-    div [ class "field is-horizontal" ]
-        [ div [ class "field-label is-normal" ] [ label [ class "label" ] [ text "Inversion" ] ]
-        , div [ class "field-body" ]
-            [ div [ class "field" ]
-                [ div [ class "select" ]
-                    [ select [ class "", onInput ChangeInversion ] <|
-                        List.map (\i -> option [ value i ] [ text i ]) [ "0", "1", "2", "3" ]
-                    ]
-                ]
-            ]
+    form [ class "fl" ]
+        [ div [ class "measure" ] [ label [ class "b db mb2" ] [ text "Inversion" ] ]
+        , select [ class "db", onInput ChangeInversion ] <|
+            List.map (\i -> option [ value i ] [ text i ]) [ "0", "1", "2", "3" ]
         ]
 
 
@@ -92,7 +73,7 @@ inversionField model =
 -}
 staffDiv : Html Msg
 staffDiv =
-    div [ id "staff", class "has-text-centered" ] []
+    div [ id "staff", class "center tc" ] [text "The staff should be rendered here; if not, try refreshing."]
 
 
 {-| The table containing all chord information.
@@ -102,15 +83,15 @@ chordTable model =
     let
         header =
             tr []
-                [ th [ class "has-text-centered" ] [ text "Chord" ]
-                , th [ colspan 3, class "has-text-centered" ] [ text "Intervals (root position)" ]
-                , th [ colspan 4, class "has-text-centered" ] [ text "Notes" ]
+                [ th [ class "tc" ] [ text "Chord" ]
+                , th [ colspan 3, class "tc" ] [ text "Intervals (root)" ]
+                , th [ colspan 4, class "tc" ] [ text "Notes" ]
                 ]
 
         rows =
             Model.chordTypes |> List.map (chordRow model)
     in
-    table [ id "chord-table", class "table is-bordered is-hoverable" ]
+    table [ class "pv2 w-100 center" ]
         [ thead [] [ header ], tbody [] rows ]
 
 
@@ -127,9 +108,9 @@ chordRow model chordType =
                 |> Dict.get chordType
                 |> Maybe.withDefault chordNotesEmpty
                 |> List.map unicodeAccidentals
-                |> List.map (\s -> td [ class "chord-note-cell has-text-centered" ] [ text s ])
+                |> List.map (\s -> td [ class "chord-note-cell tc w-10" ] [ text s ])
     in
-    tr [] ([ td [ class "chord-name-cell has-text-centered" ] [ text chordType ] ] ++ intervals ++ notes)
+    tr [] ([ td [ class "chord-name-cell tc w-30" ] [ text chordType ] ] ++ intervals ++ notes)
 
 
 {-| A single coloured cell in the intervals section of the table.
@@ -157,7 +138,7 @@ intervalCell interval =
                 _ ->
                     ""
     in
-    td [ class <| "chord-interval-cell has-text-centered " ++ colourClass ] [ text interval ]
+    td [ class <| "chord-interval-cell tc w-10 " ++ colourClass ] [ text interval ]
 
 
 {-| Replaces accidentals wtih nicer-looking unicode equivalents.
@@ -177,10 +158,10 @@ theFooter =
         line =
             p []
                 [ text "Built with "
-                , a [ href "https://elm-lang.org/" ] [ text "Elm" ]
+                , a [ class "link gray underline-hover", href "https://elm-lang.org/" ] [ text "Elm" ]
                 , text " and "
-                , a [ href "http://www.vexflow.com/" ] [ text "VexFlow" ]
+                , a [ class "link gray underline-hover", href "http://www.vexflow.com/" ] [ text "VexFlow" ]
                 , text "."
                 ]
     in
-    footer [ class "footer" ] [ div [ class "content has-text-centered" ] [ line ] ]
+    footer [ class "footer" ] [ div [ class "tc" ] [ line ] ]
