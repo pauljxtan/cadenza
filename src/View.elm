@@ -73,7 +73,7 @@ inversionField model =
 -}
 staffDiv : Html Msg
 staffDiv =
-    div [ id "staff", class "center tc" ] [text "The staff should be rendered here; if not, try refreshing."]
+    div [ id "staff", class "center tc" ] [ text "The staff should be rendered here; if not, try refreshing." ]
 
 
 {-| The table containing all chord information.
@@ -110,7 +110,7 @@ chordRow model chordType =
                 |> List.map unicodeAccidentals
                 |> List.map (\s -> td [ class "chord-note-cell tc w-10" ] [ text s ])
     in
-    tr [] ([ td [ class "chord-name-cell tc w-30" ] [ text chordType ] ] ++ intervals ++ notes)
+    tr [] ([ td [ class "chord-name-cell tl w-30" ] [ text chordType ] ] ++ intervals ++ notes)
 
 
 {-| A single coloured cell in the intervals section of the table.
@@ -152,15 +152,17 @@ unicodeAccidentals str =
         |> String.replace "#" "♯"
 
 
+{-| Some boring footer text.
+-}
 theFooter : Html Msg
 theFooter =
     let
         line =
             p []
                 [ text "Built with "
-                , a [ class "link gray underline-hover", href "https://elm-lang.org/" ] [ text "Elm" ]
+                , a [ class "link gray dim", href "https://elm-lang.org/" ] [ text "Elm" ]
                 , text " and "
-                , a [ class "link gray underline-hover", href "http://www.vexflow.com/" ] [ text "VexFlow" ]
+                , a [ class "link gray dim", href "http://www.vexflow.com/" ] [ text "VexFlow" ]
                 , text "."
                 ]
     in

@@ -1,6 +1,5 @@
 import './main.css'
 import { Elm } from './Main.elm'
-// import registerServiceWorker from './registerServiceWorker'
 
 var app = Elm.Main.init({
   node: document.getElementById('root')
@@ -10,9 +9,6 @@ var app = Elm.Main.init({
 app.ports.toJs.subscribe(function (data) {
   render(JSON.parse(data))
 })
-
-// For PWA caching
-// registerServiceWorker()
 
 // ---- VexFlow stuff below
 
